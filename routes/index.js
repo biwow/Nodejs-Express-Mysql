@@ -3,14 +3,12 @@ var router = express.Router();
 var sms = require('../model/sms');
 
 /* GET home page. */
-router.get('/', function (req, res) {
-    res.render('index');
-});
+router.get('/', sms.index);
 
-router.get('/login', function (req, res) {
-    res.render('login');
-});
+router.get('/login', sms.Glogin);
 
-router.post('/login', sms.login);
+router.post('/login', sms.Plogin);
+
+router.get('/home', sms.home);
 
 module.exports = router;
