@@ -9,26 +9,40 @@
                 <li class="active">后台用户</li>
             </ol>
             <form class="form-horizontal col-lg-9" role="form" action="/updateuser" method="post">
-                <input type="hidden" name="id" value="<%= role.id %>"/>
+                <input type="hidden" name="id" value="<%= users.id %>"/>
                 <div class="form-group">
-                    <label for="inputPassword" class="col-sm-2 control-label">角色名称</label>
+                    <label for="inputPassword" class="col-sm-2 control-label">选择角色</label>
                     <div class="col-sm-10">
-                        <input name="name" type="text" class="form-control" placeholder="角色名称" value="<%= role.name %>">
+                        <select name="roleid" class="form-control">
+                            <option value="">请选择</option>
+                            <% rolelist.forEach(function(value){ %>
+                            <option <% if(value['id']==users.roleid){ %>selected<%}%> value="<%= value['id'] %>"><%= value['name'] %></option>
+                            <% }) %>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputPassword" class="col-sm-2 control-label"><input type="checkbox" id="checkAll"/>
-                        权限</label>
+                    <label for="inputPassword" class="col-sm-2 control-label">用户名</label>
                     <div class="col-sm-10">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" <% if(/user/.test(role.auths)){ %>checked<%}%> name="auths" value="user"> 后台用户
-                        </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" <% if(/role/.test(role.auths)){ %>checked<%}%> name="auths" value="role"> 角色管理
-                        </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" <% if(/sms/.test(role.auths)){ %>checked<%}%> name="auths" value="sms"> 短信管理
-                        </label>
+                        <input name="user" type="text" class="form-control" placeholder="用户名" value="<%= users.user %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-10">
+                        <input name="password" type="password" class="form-control" placeholder="密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-2 control-label">手机号</label>
+                    <div class="col-sm-10">
+                        <input name="phoneno" type="text" class="form-control" placeholder="手机号" value="<%= users.phoneno %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-2 control-label">E-mail</label>
+                    <div class="col-sm-10">
+                        <input name="email" type="text" class="form-control" placeholder="E-mail" value="<%= users.email %>">
                     </div>
                 </div>
                 <div class="form-group text-center">
@@ -36,6 +50,7 @@
                     <button type="button" class="btn btn-default" onClick="javascript :history.go(-1);">取消</button>
                 </div>
             </form>
+        </div>
     </div>
 </div>
 <%- include footer %>

@@ -31,6 +31,8 @@ exports.index = function (req, res) {
     }, function (error, result) {
         res.render('role', {
             user: req.session.user,
+            auths: req.session.auths,
+            rolename: req.session.rolename,
             smslist: result.one,
             page: showPage.show(url, result.two[0].total, pagesize, page),
         });
@@ -70,6 +72,8 @@ exports.edit = function (req, res) {
     }, function (error, result) {
         res.render('role_edit', {
             user: req.session.user,
+            auths: req.session.auths,
+            rolename: req.session.rolename,
             role: result.one[0]
         });
     })

@@ -43,6 +43,8 @@ exports.index = function (req, res) {
         });
         res.render('sms', {
             user: req.session.user,
+            auths: req.session.auths,
+            rolename: req.session.rolename,
             smslist: result.one,
             page: showPage.show(url, result.two[0].total, pagesize, page),
             channel: req.query.channel,

@@ -29,11 +29,18 @@
                     <% smslist.forEach(function(value){ %>
                     <tr>
                         <td><%= value['user'] %></td>
-                        <td>管理员</td>
+                        <td><%= value['role'] %></td>
                         <td><%= value['phoneno'] %></td>
                         <td><%= value['lastlogintime'] %></td>
                         <td><%= value['lastloginip'] %></td>
-                        <td><a>[编辑]</a> <a>[删除]</a></td>
+                        <td>
+                            <button type="button" class="btn btn-info" onclick="window.location.href='/editUser?id=<%=value['id']%>';return false;">
+                                <span class="glyphicon glyphicon-pencil"></span> 编辑
+                            </button>
+                            <button type="button" class="btn btn-warning" onclick="window.location.href='/delUser?id=<%=value['id']%>';return false;">
+                                <span class="glyphicon glyphicon-trash"></span> 删除
+                            </button>
+                        </td>
                     </tr>
                     <% }) %>
                     </tbody>
@@ -61,6 +68,17 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" action="/addUser" method="post">
+                    <div class="form-group">
+                        <label for="inputPassword" class="col-sm-2 control-label">选择角色</label>
+                        <div class="col-sm-10">
+                            <select name="roleid" class="form-control">
+                                <option value="">请选择</option>
+                                <% rolelist.forEach(function(value){ %>
+                                <option value="<%= value['id'] %>"><%= value['name'] %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="inputPassword" class="col-sm-2 control-label">用户名</label>
                         <div class="col-sm-10">

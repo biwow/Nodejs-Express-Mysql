@@ -3,6 +3,7 @@ var showPage = require('../lib/page');
 var async = require('async');
 var moment = require('moment');
 var pagesize = 20;
+var md5 = require('md5');
 
 exports.index = function (req, res) {
     if (req.session.user === undefined) {
@@ -16,33 +17,33 @@ exports.index = function (req, res) {
     } else {
         url += '?';
     }
-    var where = ' WHERE 1 ';
-    if (req.query.channel) {
-        where += " and channel='" + req.query.channel + "' ";
-    }
-
-    if (req.query.phoneno) {
-        where += " and phoneno='" + req.query.phoneno + "' ";
-    }
-
-    async.series({
+     async.series({
         one: function (done) {
-            test.index("select * from heshe_admins " + where + " order by id asc limit " + (parseInt(page) - 1) * pagesize + "," + pagesize, function (list) {
+            test.index("select a.id,a.user,b.name as role,a.phoneno,a.lastlogintime,a.lastloginip from heshe_admins as a left join heshe_admin_role as b on a.roleid=b.id order by id asc limit " + (parseInt(page) - 1) * pagesize + "," + pagesize, function (list) {
                 done(null, list);
             });
         },
         two: function (done) {
-            test.index("SELECT COUNT(*) AS total FROM heshe_admins" + where, function (list) {
+            test.index("SELECT COUNT(*) AS total FROM heshe_admins", function (list) {
+                done(null, list);
+            });
+        },
+        three: function (done) {
+            test.index("select * from `heshe_admin_role`", function (list) {
                 done(null, list);
             });
         }
     }, function (error, result) {
         result.one.forEach(function (item) {
-            item.lastlogintime = moment(item.lastlogintime * 1000).format('Y-MM-DD HH:mm:ss');
+            item.lastlogintime = item.lastlogintime != null ? moment(item.lastlogintime * 1000).format('YYYY-MM-DD HH:mm:ss') : "从未登陆";
         });
+
         res.render('user', {
             user: req.session.user,
+            auths: req.session.auths,
+            rolename: req.session.rolename,
             smslist: result.one,
+            rolelist: result.three,
             page: showPage.show(url, result.two[0].total, pagesize, page),
         });
     })
@@ -52,16 +53,39 @@ exports.add = function (req, res) {
     if (req.session.user === undefined) {
         res.redirect('/login');
     }
-    var user = req.body.user;
-    var password = req.body.password;
-    var phoneno = req.body.phoneno;
-    var email = req.body.email;
-    var items = 'data';
+    var key = new Array();
+    var value = new Array();
 
+    if (req.body.roleid) {
+        key = key.concat("roleid");
+        value = value.concat("'" + req.body.roleid + "'");
+    }
+    if (req.body.user) {
+        key = key.concat("user");
+        value = value.concat("'" + req.body.user + "'");
+    }
+    if (req.body.password) {
+        key = key.concat("password");
+        value = value.concat("'" + md5(req.body.password) + "'");
+    }
+    if (req.body.phoneno) {
+        key = key.concat("phoneno");
+        value = value.concat("'" + req.body.phoneno + "'");
+    }
+    if (req.body.email) {
+        key = key.concat("email");
+        value = value.concat("'" + req.body.email + "'");
+    }
+
+    key = key.concat("regdate");
+    value = value.concat("'" + moment().format('X') + "'");
+
+    key = key.concat("items");
+    value = value.concat("'data'");
 
     async.series({
         one: function (done) {
-            test.index("INSERT INTO `heshe_admins` (`user`, `password`,`phoneno`,`email`,`items`) VALUES ('" + user + "', '" + password + "', '" + phoneno + "', '" + email + "', '" + items + "')", function (list) {
+            test.index("INSERT INTO `heshe_admins` (" + key.join(",") + ") VALUES (" + value.join(",") + ")", function (list) {
                 done(null, list);
             });
         }
@@ -81,11 +105,19 @@ exports.edit = function (req, res) {
             test.index("select * from heshe_admins where id = " + id, function (list) {
                 done(null, list);
             });
+        },
+        two: function (done) {
+            test.index("select * from `heshe_admin_role`", function (list) {
+                done(null, list);
+            });
         }
     }, function (error, result) {
         res.render('user_edit', {
             user: req.session.user,
-            role: result.one[0]
+            auths: req.session.auths,
+            rolename: req.session.rolename,
+            rolelist: result.two,
+            users: result.one[0]
         });
     })
 };
@@ -95,12 +127,27 @@ exports.update = function (req, res) {
         res.redirect('/login');
     }
     var id = req.body.id;
-    var name = req.body.name;
-    var auths = req.body.auths;
+    var change = new Array();
+    if (req.body.roleid) {
+        change = change.concat("roleid='" + req.body.roleid + "'");
+    }
+    if (req.body.user) {
+        change = change.concat("user='" + req.body.user + "'");
+    }
+    if (req.body.password) {
+        change = change.concat("password='" + md5(req.body.password) + "'");
+    }
+    if (req.body.phoneno) {
+        change = change.concat("phoneno='" + req.body.phoneno + "'");
+    }
+    if (req.body.email) {
+        change = change.concat("email='" + req.body.email + "'");
+    }
+    change = change.join(",");
 
     async.series({
         one: function (done) {
-            test.index("UPDATE `heshe_admins` SET `name` = '" + name + "',`auths` = '" + auths + "' WHERE `id` = " + id, function (list) {
+            test.index("UPDATE `heshe_admins` SET " + change + " WHERE `id` = " + id, function (list) {
                 done(null, list);
             });
         }
