@@ -1,73 +1,52 @@
-var test = require('../lib/query');
+var test = require('../lib/mysql_testdb');
+var showPage = require('../lib/page');
 var async = require('async');
-var md5 = require('md5');
+var moment = require('moment');
+var pagesize = 20;
 
-exports.demo = function (req, res) {
+exports.index = function (req, res) {
+    if (req.session.user === undefined) {
+        res.redirect('/login');
+    }
+    var page = req.query.page ? req.query.page : 1; //获取当前页数，如果没有则为1
+    var url = req.originalUrl; //获取当前url，并把url中page参数过滤掉
+    url = url.replace(/([?&]*)page=([0-9]+)/g, '');
+    if (/[?]+/.test(url)) {
+        url += '&';
+    } else {
+        url += '?';
+    }
+    var where = ' WHERE 1 ';
+    if (req.query.channel) {
+        where += " and channel='" + req.query.channel + "' ";
+    }
+
+    if (req.query.phoneno) {
+        where += " and phoneno='" + req.query.phoneno + "' ";
+    }
+
     async.series({
         one: function (done) {
-            test.index("select * from heshe_sms_log where id=29004", function (list) {
+            test.index("select * from heshe_sms_log " + where + " order by id asc limit " + (parseInt(page) - 1) * pagesize + "," + pagesize, function (list) {
                 done(null, list);
             });
         },
         two: function (done) {
-            test.index("select * from heshe_sms_log where id=29005", function (list) {
-                done(null, list);
-            });
-        },
-        three: function (done) {
-            test.index("select * from heshe_sms_log where id=29006", function (list) {
+            test.index("SELECT COUNT(*) AS total FROM heshe_sms_log" + where, function (list) {
                 done(null, list);
             });
         }
     }, function (error, result) {
-        res.render('index', {
-            title: result.one[0]['phoneno'],
+        result.one.forEach(function (item) {
+            item.receipt_time = parseInt(item.receipt_time) ? parseInt(item.receipt_time) - parseInt(item.send_time) : 'NO';
+            item.send_time = moment(item.send_time * 1000).format('Y-MM-DD HH:mm:ss');
         });
-        console.log('one:', result.one);
-        console.log('two:', result.two);
-        console.log('three:', result.three);
+        res.render('sms', {
+            user: req.session.user,
+            smslist: result.one,
+            page: showPage.show(url, result.two[0].total, pagesize, page),
+            channel: req.query.channel,
+            phoneno: req.query.phoneno
+        });
     })
-};
-
-exports.Plogin = function (req, res) {
-    var user = req.body.username;
-    var password = md5(req.body.password);
-    test.index("select * from heshe_admins where user='" + user + "' and password='" + password + "'", function (list) {
-        if (list) {
-            req.session.user = user;
-            res.cookie('token', 888888, {maxAge: 60 * 1000 * 60 * 24 * 7});
-            res.clearCookie('login_error');
-            res.redirect('/home');
-        } else {
-            console.log(req.cookies.login_error);
-            if (req.cookies.login_error) {
-                res.cookie('login_error', parseInt(req.cookies.login_error) + 1, {maxAge: 60 * 1000 * 60 * 24 * 7});
-            } else {
-                res.cookie('login_error', 1, {maxAge: 60 * 1000 * 60 * 24 * 7});
-            }
-
-            res.redirect('/login');
-        }
-    });
-};
-
-exports.Glogin = function (req, res) {
-    if(req.session.user){
-        res.redirect('/home');
-    }else{
-        res.render('login');
-    }
-};
-
-exports.index = function (req, res) {
-    res.redirect('/login');
-};
-
-exports.home = function (req, res) {
-    if(req.session.user === undefined){
-        res.redirect('/login');
-    }
-    res.render('index', {
-        user: req.session.user
-    });
 };

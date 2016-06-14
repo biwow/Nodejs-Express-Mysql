@@ -1,0 +1,61 @@
+<%- include header %>
+<div class="container col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+        <%- include left %>
+        <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+            <ol class="breadcrumb">
+                <li><a href="#">首页</a></li>
+                <li><a href="#">系统管理</a></li>
+                <li class="active">短信管理</li>
+            </ol>
+            <div class="row">
+                <form role="form" class="form-inline" method="get" action="">
+                    <div class="form-group">
+                        <select name="channel" class="form-control">
+                            <option value="">所有</option>
+                            <option <% if(channel=='huyi'){ %>selected<% } %> value="huyi">互亿</option>
+                            <option <% if(channel=='mandao'){ %>selected<% } %> value="mandao">漫道</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="phoneno" class="form-control" placeholder="搜索手机号" value="<%=phoneno%>">
+                    </div>
+                    <button type="submit" class="btn btn-default">提交</button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>手机号</th>
+                        <th>短信通道</th>
+                        <th>短信内容</th>
+                        <th>发送时间</th>
+                        <th>接收时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% smslist.forEach(function(value){ %>
+                    <tr>
+                        <td><%= value['id'] %></td>
+                        <td><%= value['phoneno'] %></td>
+                        <td><%= value['channel'] %></td>
+                        <td><%= value['message'] %></td>
+                        <td><%= value['send_time'] %></td>
+                        <td><%= value['receipt_time'] %>秒</td>
+                    </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-12 text-center">
+                <ul class="pagination">
+                    <%- include page %>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+<%- include footer %>

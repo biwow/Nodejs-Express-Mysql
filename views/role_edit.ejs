@@ -1,0 +1,54 @@
+<%- include header %>
+<div class="container col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+        <%- include left %>
+        <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+            <ol class="breadcrumb">
+                <li><a href="/home">首页</a></li>
+                <li><a href="#">系统管理</a></li>
+                <li class="active">角色管理</li>
+            </ol>
+            <div class="row">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addRole">
+                    <span class="glyphicon glyphicon-plus"></span> 添加角色
+                </button>
+            </div>
+            <form class="form-horizontal col-lg-9" role="form" action="/updateRole" method="post">
+                <input type="hidden" name="id" value="<%= role.id %>"/>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-2 control-label">角色名称</label>
+                    <div class="col-sm-10">
+                        <input name="name" type="text" class="form-control" placeholder="角色名称" value="<%= role.name %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-2 control-label"><input type="checkbox" id="checkAll"/>
+                        权限</label>
+                    <div class="col-sm-10">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" <% if(/user/.test(role.auths)){ %>checked<%}%> name="auths" value="user"> 后台用户
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" <% if(/role/.test(role.auths)){ %>checked<%}%> name="auths" value="role"> 角色管理
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" <% if(/sms/.test(role.auths)){ %>checked<%}%> name="auths" value="sms"> 短信管理
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                    <button type="button" class="btn btn-default" onClick="javascript :history.go(-1);">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include footer %>
+<script>
+    $(function () {
+        $("#checkAll").click(function () {
+            $("input[name='auths']:checkbox").prop("checked", this.checked);
+        });
+    });
+</script>

@@ -1,0 +1,6 @@
+<li><a href="<%=page.pagePath%>page=<%=page.prev%>">&laquo;</a></li>
+<% for(var i=page.min; i<=page.max; i++) {%>
+<li <% if(page.page==i){%>class="active"<% } %>><a href="<%=page.pagePath%>page=<%=i%>"><%=i%></a></li>
+<% } %>
+<li><a href="<%=page.pagePath%>page=<%=page.next%>">&raquo;</a></li>
+<li><a>共<%=page.pagenum%>页 <%=page.total%>条数据</a></li>
