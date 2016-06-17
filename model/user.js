@@ -6,9 +6,6 @@ var pagesize = 20;
 var md5 = require('md5');
 
 exports.index = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var page = req.query.page ? req.query.page : 1; //获取当前页数，如果没有则为1
     var url = req.originalUrl; //获取当前url，并把url中page参数过滤掉
     url = url.replace(/([?&]*)page=([0-9]+)/g, '');
@@ -37,11 +34,7 @@ exports.index = function (req, res) {
         result.one.forEach(function (item) {
             item.lastlogintime = item.lastlogintime != null ? moment(item.lastlogintime * 1000).format('YYYY-MM-DD HH:mm:ss') : "从未登陆";
         });
-
         res.render('user', {
-            user: req.session.user,
-            auths: req.session.auths,
-            rolename: req.session.rolename,
             smslist: result.one,
             rolelist: result.three,
             page: showPage.show(url, result.two[0].total, pagesize, page),
@@ -50,9 +43,6 @@ exports.index = function (req, res) {
 };
 
 exports.add = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var key = new Array();
     var value = new Array();
 
@@ -95,9 +85,6 @@ exports.add = function (req, res) {
 };
 
 exports.edit = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.query.id; //获取当前页数，如果没有则为1
 
     async.series({
@@ -113,9 +100,6 @@ exports.edit = function (req, res) {
         }
     }, function (error, result) {
         res.render('user_edit', {
-            user: req.session.user,
-            auths: req.session.auths,
-            rolename: req.session.rolename,
             rolelist: result.two,
             users: result.one[0]
         });
@@ -123,9 +107,6 @@ exports.edit = function (req, res) {
 };
 
 exports.update = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.body.id;
     var change = new Array();
     if (req.body.roleid) {
@@ -157,9 +138,6 @@ exports.update = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.query.id;
 
     async.series({

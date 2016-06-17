@@ -5,9 +5,6 @@ var moment = require('moment');
 var pagesize = 20;
 
 exports.index = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var page = req.query.page ? req.query.page : 1; //获取当前页数，如果没有则为1
     var url = req.originalUrl; //获取当前url，并把url中page参数过滤掉
     url = url.replace(/([?&]*)page=([0-9]+)/g, '');
@@ -42,9 +39,6 @@ exports.index = function (req, res) {
             item.send_time = moment(item.send_time * 1000).format('Y-MM-DD HH:mm:ss');
         });
         res.render('sms', {
-            user: req.session.user,
-            auths: req.session.auths,
-            rolename: req.session.rolename,
             smslist: result.one,
             page: showPage.show(url, result.two[0].total, pagesize, page),
             channel: req.query.channel,

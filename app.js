@@ -21,13 +21,26 @@ app.use(session({
     cookie: {maxAge: 10 * 60 * 60 * 1000}
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', routes);
 
+/* 中间件,判断用户是否登录 */
+app.use(function (req, res, next) {
+    if (req.url != '/login' && req.session.user === undefined) {
+        res.redirect('/login');
+        return;
+    }
+    res.locals.user = req.session.user;
+    res.locals.auths = req.session.auths;
+    res.locals.rolename = req.session.rolename;
+    next();
+});
+app.use('/', routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
+    res.render('404');
+    return;
     next(err);
 });
 if (app.get('env') === 'development') {
@@ -49,6 +62,5 @@ app.use(function (err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

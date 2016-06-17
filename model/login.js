@@ -34,7 +34,7 @@ exports.Plogin = function (req, res) {
     var user = req.body.username;
     var password = md5(req.body.password);
     test.index("select a.id,b.auths,b.name from heshe_admins as a left join heshe_admin_role as b on a.roleid=b.id where a.user='" + user + "' and a.password='" + password + "'", function (list) {
-        if (list) {
+        if (list.length != 0) {
             req.session.user = user;
             req.session.rolename = list[0].name;
             req.session.auths = list[0].auths;
@@ -43,7 +43,6 @@ exports.Plogin = function (req, res) {
             test.index("UPDATE `heshe_admins` SET lastlogintime='" + moment().format('X') + "',lastloginip='" + req.socket.remoteAddress.replace("::ffff:", "") + "' WHERE `id` = " + list[0].id);
             res.redirect('/home');
         } else {
-            console.log(req.cookies.login_error);
             if (req.cookies.login_error) {
                 res.cookie('login_error', parseInt(req.cookies.login_error) + 1, {maxAge: 60 * 1000 * 60 * 24 * 7});
             } else {
@@ -74,12 +73,5 @@ exports.logout = function (req, res) {
 };
 
 exports.home = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
-    res.render('home', {
-        user: req.session.user,
-        auths: req.session.auths,
-        rolename: req.session.rolename
-    });
+    res.render('home');
 };

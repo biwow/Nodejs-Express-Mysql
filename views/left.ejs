@@ -9,15 +9,15 @@
                 </h4>
             </div>
             <div id="collapseOne" class="panel-collapse collapse in">
-                <% if(auths.indexOf("user") >= 0){ %>
+                <% if(locals.auths.indexOf("user") >= 0){ %>
                 <a href="/user" class="list-group-item"><span class="badge pull-right">3</span>后台用户</a>
-                <%}%>
-                <% if(auths.indexOf("role") >= 0){ %>
+                <% } %>
+                <% if(locals.auths.indexOf("role") >= 0){ %>
                 <a href="/role" class="list-group-item">角色管理</a>
-                <%}%>
-                <% if(auths.indexOf("sms") >= 0){ %>
+                <% } %>
+                <% if(locals.auths.indexOf("sms") >= 0){ %>
                 <a href="/sms" class="list-group-item">短信管理</a>
-                <%}%>
+                <% } %>
             </div>
         </div>
         <div class="panel panel-default">

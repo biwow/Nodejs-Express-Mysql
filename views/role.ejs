@@ -18,15 +18,15 @@
                     <thead>
                     <tr>
                         <th>角色名称</th>
-                        <th>角色用户</th>
+                        <th>角色权限</th>
                         <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <% smslist.forEach(function(value){ %>
+                    <% rolelist.forEach(function(value){ %>
                     <tr>
                         <td><%= value['name'] %></td>
-                        <td>张三</td>
+                        <td><%= value['auths'] %></td>
                         <td>
                             <button type="button" class="btn btn-info" onclick="window.location.href='/editRole?id=<%=value['id']%>';return false;">
                                 <span class="glyphicon glyphicon-pencil"></span> 编辑

@@ -5,9 +5,6 @@ var moment = require('moment');
 var pagesize = 20;
 
 exports.index = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var page = req.query.page ? req.query.page : 1; //获取当前页数，如果没有则为1
     var url = req.originalUrl; //获取当前url，并把url中page参数过滤掉
     url = url.replace(/([?&]*)page=([0-9]+)/g, '');
@@ -30,19 +27,13 @@ exports.index = function (req, res) {
         }
     }, function (error, result) {
         res.render('role', {
-            user: req.session.user,
-            auths: req.session.auths,
-            rolename: req.session.rolename,
-            smslist: result.one,
+            rolelist: result.one,
             page: showPage.show(url, result.two[0].total, pagesize, page),
         });
     })
 };
 
 exports.add = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var name = req.body.name;
     var auths = req.body.auths;
 
@@ -58,9 +49,6 @@ exports.add = function (req, res) {
 };
 
 exports.edit = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.query.id; //获取当前页数，如果没有则为1
 
     async.series({
@@ -71,18 +59,12 @@ exports.edit = function (req, res) {
         }
     }, function (error, result) {
         res.render('role_edit', {
-            user: req.session.user,
-            auths: req.session.auths,
-            rolename: req.session.rolename,
             role: result.one[0]
         });
     })
 };
 
 exports.update = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.body.id;
     var name = req.body.name;
     var auths = req.body.auths;
@@ -99,9 +81,6 @@ exports.update = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-    if (req.session.user === undefined) {
-        res.redirect('/login');
-    }
     var id = req.query.id;
 
     async.series({
