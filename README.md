@@ -1,6 +1,6 @@
 ## Nodejs + Mysql 后台管理系统
 
-标签（空格分隔）： Nodejs Mysql Express Ejs
+标签： Nodejs Mysql Express Ejs
 <font color="green">
 <sub>v0.1
 2016.06.20<sub>
